@@ -1,0 +1,27 @@
+[
+    {
+        "email": "undercover12mike@gmail.com",
+        "password": "12341234",
+        "code": "a"
+    },
+    {
+        "email": "ddesh051@gmail.com",
+        "password": "12341234",
+        "code": "a"
+    },
+    {
+        "email": "a",
+        "password": "aa",
+        "code": "a"
+    },
+    {
+        "email": "b",
+        "password": "bb",
+        "code": "b"
+    },
+    {
+        "email": "c",
+        "password": "c",
+        "code": "c"
+    }
+]

@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>About Student - Modern Header</title>
+    <!-- Google Font: Cairo (good for Arabic) -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <!-- Protocol Check Overlay REMOVED -->
+
+    <!-- Login Modal -->
+    <div id="login-modal" class="modal-overlay hidden">
+        <div class="modal-content" dir="ltr" style="text-align: left;">
+            <h2>Student Sign In</h2>
+            <p>You must sign in to access the site content.</p>
+            <div style="margin-bottom: 1rem;">
+                <input type="email" id="email" placeholder="Email Address"
+                    style="width: 100%; padding: 0.8rem; margin-bottom: 0.5rem; border: 1px solid #ccc; border-radius: 4px;">
+                <input type="password" id="password" placeholder="Password"
+                    style="width: 100%; padding: 0.8rem; border: 1px solid #ccc; border-radius: 4px;">
+            </div>
+            <button id="modal-login-btn" class="btn btn-modal-action">Student Sign In</button>
+            <div class="modal-footer"
+                style="display: flex; flex-direction: column; gap: 10px; align-items: center; margin-top: 1.5rem;">
+                <span style="font-size: 0.9rem; color: #666;">Or</span>
+                <button id="modal-organizer-btn" class="btn-link" style="font-size: 1rem;">Organizer Sign In</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Subscribe Modal REMOVED -->
+
+    <!-- Notifications Modal -->
+    <div id="notifications-modal" class="modal-overlay hidden">
+        <div class="modal-content" dir="ltr" style="text-align: left; max-width: 600px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                <h2 style="margin: 0;">🔔 Payment Notifications</h2>
+                <button id="close-notifications-modal" class="btn-link"
+                    style="font-size: 1.5rem; cursor: pointer; background: none; border: none; color: #666;">&times;</button>
+            </div>
+            <div id="notifications-list" style="max-height: 400px; overflow-y: auto;">
+                <!-- Notifications will be populated here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Response Modal for Payment Notifications -->
+    <div id="response-modal" class="modal-overlay hidden">
+        <div class="modal-content" dir="ltr" style="text-align: left; max-width: 500px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                <h2 style="margin: 0;">💰 Respond to Payment Request</h2>
+                <button id="close-response-modal" class="btn-link"
+                    style="font-size: 1.5rem; cursor: pointer; background: none; border: none; color: #666;">&times;</button>
+            </div>
+            <div style="margin-bottom: 1rem;">
+                <p style="color: #666; margin-bottom: 1rem;">Student Code: <strong id="response-student-code"></strong>
+                </p>
+                <div style="margin-bottom: 1rem;">
+                    <label style="display: block; margin-bottom: 0.5rem; font-weight: bold;">Number of Hours:</label>
+                    <input type="number" id="response-hours" placeholder="Enter hours (e.g., 18)"
+                        style="width: 100%; padding: 0.8rem; border: 1px solid #ccc; border-radius: 4px;" min="0"
+                        step="1">
+                </div>
+                <div style="margin-bottom: 1rem;">
+                    <label style="display: block; margin-bottom: 0.5rem; font-weight: bold;">Price per Hour
+                        (USD):</label>
+                    <input type="number" id="response-price" placeholder="Enter price (e.g., 1)"
+                        style="width: 100%; padding: 0.8rem; border: 1px solid #ccc; border-radius: 4px;" min="0"
+                        step="0.01">
+                </div>
+                <div style="margin-bottom: 1rem; padding: 1rem; background: #f0f0f0; border-radius: 4px;">
+                    <p style="margin: 0; font-weight: bold;">Total: $<span id="response-total">0.00</span></p>
+                </div>
+            </div>
+            <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                <button id="cancel-response-btn" class="btn btn-logout"
+                    style="background: #6c757d; border-color: #6c757d;">Cancel</button>
+                <button id="submit-response-btn" class="btn btn-modal-action"
+                    style="background: #28a745; border-color: #28a745;">Send Response</button>
+            </div>
+        </div>
+    </div>
+
+
+    <header class="site-header" aria-label="Main navigation bar">
+        <div class="container">
+            <!-- Brand -->
+            <div class="brand" aria-label="Logo and About Student">
+                <div class="logo" aria-hidden="true">A</div>
+            </div>
+
+            <!-- Hamburger button (mobile) -->
+            <button id="hamburger" class="hamburger" aria-label="Mobile menu">
+                &#9776;
+            </button>
+
+            <!-- Navigation (desktop) -->
+            <nav class="primary-nav" aria-label="Navigation">
+                <ul class="menu" id="desktop-menu" dir="ltr">
+                    <li><a href="#" data-page="home">Home</a></li>
+                    <li><a href="#" data-page="about">Student Data</a></li>
+                    <li><a href="#" data-page="contact">Contact Us</a></li>
+                </ul>
+            </nav>
+
+            <!-- Auth Buttons -->
+            <div class="auth-buttons" aria-label="Login and logout buttons">
+                <!-- Not forcing logic ID here for trigger, JS handles it -->
+                <button id="btn-pay-nav" class="btn btn-login hidden" type="button"
+                    style="margin-left: 5px; background: #28a745; border-color: #28a745;">Pay Now</button>
+                <button id="btn-notification-nav" class="btn btn-login hidden" type="button"
+                    style="margin-left: 5px; background: #17a2b8; border-color: #17a2b8;">Notification</button>
+                <button id="btn-organizer-nav" class="btn btn-login" type="button"
+                    style="margin-left: 5px; background: var(--orange-dark); border-color: var(--orange-light);">Organizer
+                    Sign In</button>
+                <button id="btn-login-nav" class="btn btn-login" type="button">Student Sign In</button>
+                <button id="btn-logout-nav" class="btn btn-logout hidden" type="button">Sign Out</button>
+            </div>
+        </div>
+
+        <!-- Mobile slide-down menu -->
+        <div class="mobile-menu" id="mobile-menu" aria-label="Mobile menu">
+            <ul>
+                <li><a href="#" data-page="home">Home</a></li>
+                <li><a href="#" data-page="about">Student Data</a></li>
+                <li><a href="#" data-page="contact">Contact Us</a></li>
+            </ul>
+        </div>
+    </header>
+
+    <main role="main" aria-label="Page content" style="padding: 2rem;">
+        <!-- Main content container that gets populated by JS -->
+        <div id="main-content"></div>
+    </main>
+
+    <!-- Templates for SPA Views -->
+    <template id="home-template">
+        <div class="home-view" style="padding: 2rem;">
+            <div style="text-align: center; margin-bottom: 3rem;">
+                <h1 style="color: var(--orange-dark); margin-bottom: 0.5rem;">Welcome to the Student Portal</h1>
+                <p style="color: #666; font-size: 1.1rem;">Stay updated with the latest news and announcements</p>
+            </div>
+
+            <div class="news-section">
+                <h2 style="color: var(--orange-dark); margin-bottom: 2rem; text-align: center;">Latest News</h2>
+                <div class="news-grid">
+                    <!-- News Item 1 -->
+                    <div class="news-card">
+                        <div class="news-header">
+                            <span class="news-date">2026/Feb/04</span>
+                            <span class="news-category">Student Affairs</span>
+                        </div>
+                        <h3 class="news-title">Health Insurance for Private Higher Institute Students</h3>
+                        <p class="news-description">Official important announcement</p>
+                        <div class="news-footer">
+                            <span class="news-views">2342 views</span>
+                        </div>
+                    </div>
+
+                    <!-- News Item 2 -->
+                    <div class="news-card">
+                        <div class="news-header">
+                            <span class="news-date">2026/Feb/03</span>
+                            <span class="news-category">Exams</span>
+                        </div>
+                        <h3 class="news-title">Second Semester Lecture Schedules - Computer Science</h3>
+                        <p class="news-description">For the academic year 2025-2026</p>
+                        <div class="news-footer">
+                            <span class="news-views">3639 views</span>
+                        </div>
+                    </div>
+
+                    <!-- News Item 3 -->
+                    <div class="news-card">
+                        <div class="news-header">
+                            <span class="news-date">2026/Feb/03</span>
+                            <span class="news-category">Exams</span>
+                        </div>
+                        <h3 class="news-title">Second Semester Lecture Schedules - Management & Accounting</h3>
+                        <p class="news-description">For the academic year 2025-2026</p>
+                        <div class="news-footer">
+                            <span class="news-views">2208 views</span>
+                        </div>
+                    </div>
+
+                    <!-- News Item 4 -->
+                    <div class="news-card">
+                        <div class="news-header">
+                            <span class="news-date">2026/Feb/03</span>
+                            <span class="news-category">Exams</span>
+                        </div>
+                        <h3 class="news-title">Second Semester Lecture Schedules - MIS</h3>
+                        <p class="news-description">For the academic year 2025-2026</p>
+                        <div class="news-footer">
+                            <span class="news-views">4292 views</span>
+                        </div>
+                    </div>
+
+                    <!-- News Item 5 -->
+                    <div class="news-card">
+                        <div class="news-header">
+                            <span class="news-date">2026/Jan/27</span>
+                            <span class="news-category">Student Affairs</span>
+                        </div>
+                        <h3 class="news-title">Tuition Payment & Registration Guidance</h3>
+                        <p class="news-description">For the second semester of the academic year 2025-2026</p>
+                        <div class="news-footer">
+                            <span class="news-views">6108 views</span>
+                        </div>
+                    </div>
+
+                    <!-- News Item 6 -->
+                    <div class="news-card">
+                        <div class="news-header">
+                            <span class="news-date">2026/Jan/26</span>
+                            <span class="news-category">Exams</span>
+                        </div>
+                        <h3 class="news-title">First Semester Exam Results</h3>
+                        <p class="news-description">Academic year 2025-2026</p>
+                        <div class="news-footer">
+                            <span class="news-views">37725 views</span>
+                        </div>
+                    </div>
+
+                    <!-- News Item 7 -->
+                    <div class="news-card">
+                        <div class="news-header">
+                            <span class="news-date">2025/Aug/10</span>
+                            <span class="news-category">Recruitment</span>
+                        </div>
+                        <h3 class="news-title">Military Education Registration - Session 50</h3>
+                        <p class="news-description">Registration period: 13/19 to 25/9/2025</p>
+                        <div class="news-footer">
+                            <span class="news-views">1195 views</span>
+                        </div>
+                    </div>
+
+                    <!-- News Item 8 -->
+                    <div class="news-card">
+                        <div class="news-header">
+                            <span class="news-date">2025/Aug/10</span>
+                            <span class="news-category">Events</span>
+                        </div>
+                        <h3 class="news-title">Job Announcement - Teaching Assistants</h3>
+                        <p class="news-description">For the academic year 2025-2026</p>
+                        <div class="news-footer">
+                            <span class="news-views">1774 views</span>
+                        </div>
+                    </div>
+
+                    <!-- News Item 9 -->
+                    <div class="news-card">
+                        <div class="news-header">
+                            <span class="news-date">2025/Aug/10</span>
+                            <span class="news-category">Events</span>
+                        </div>
+                        <h3 class="news-title">Job Announcement - Faculty Members</h3>
+                        <p class="news-description">For the academic year 2025-2026</p>
+                        <div class="news-footer">
+                            <span class="news-views">1286 views</span>
+                        </div>
+                    </div>
+
+                    <!-- News Item 10 -->
+                    <div class="news-card">
+                        <div class="news-header">
+                            <span class="news-date">2025/Aug/05</span>
+                            <span class="news-category">Student Affairs</span>
+                        </div>
+                        <h3 class="news-title">ECPC Competition</h3>
+                        <p class="news-description">Institute team achieves 10th place</p>
+                        <div class="news-footer">
+                            <span class="news-views">1268 views</span>
+                        </div>
+                    </div>
+
+                    <!-- News Item 11 -->
+                    <div class="news-card">
+                        <div class="news-header">
+                            <span class="news-date">2025/Aug/04</span>
+                            <span class="news-category">Youth Welfare</span>
+                        </div>
+                        <h3 class="news-title">Sharm El-Sheikh Trip</h3>
+                        <p class="news-description">Summer activities</p>
+                        <div class="news-footer">
+                            <span class="news-views">829 views</span>
+                        </div>
+                    </div>
+
+                    <!-- News Item 12 -->
+                    <div class="news-card">
+                        <div class="news-header">
+                            <span class="news-date">2025/Feb/22</span>
+                            <span class="news-category">Youth Welfare</span>
+                        </div>
+                        <h3 class="news-title">Skills from Google</h3>
+                        <p class="news-description">Enhancing productivity with AI assistance</p>
+                        <div class="news-footer">
+                            <span class="news-views">764 views</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <template id="contact-template">
+        <div class="contact-view" style="max-width: 600px; margin: 0 auto; text-align: center;">
+            <h2>Contact Us</h2>
+            <p>For any inquiries, please email us at support@example.com or call +123456789.</p>
+        </div>
+    </template>
+
+    <template id="about-template">
+        <!-- Controls (Search) -->
+        <div class="controls-area" id="search-controls" style="display: none;">
+            <input type="text" id="student-search" class="search-box"
+                placeholder="Search by Student Code (e.g., C25...)">
+            <button id="btn-search" class="btn btn-login" style="background: var(--orange-dark);">Search</button>
+        </div>
+
+        <div class="id-card-container">
+            <div class="id-header">
+                <div class="title" style="font-size: 1.2rem;">National Institute</div>
+                <div class="title"
+                    style="background: #fff; color: var(--orange-dark); padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 1rem;">
+                    STUDENT ID</div>
+            </div>
+
+            <div class="id-body">
+                <div class="photo-area" id="photo-area" style="position: relative;">
+                    <!-- Placeholder or uploaded image -->
+                    <img id="student-photo" src="" alt="Student Photo" style="display:none;">
+                    <span id="photo-placeholder">Photo</span>
+                    <input type="file" id="photo-upload" accept="image/*" style="display: none;">
+                </div>
+
+                <!-- QR Code Area -->
+                <div class="qr-area"
+                    style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.5rem;">
+                    <img id="student-qr-code" src="" alt="Student QR Code"
+                        style="width: 120px; height: 120px; border: 1px solid #ddd; padding: 5px; background: #fff; display: none;">
+                    <span style="font-size: 0.8rem; color: #666; font-weight: bold;">Attendance QR</span>
+                </div>
+
+                <div class="info-area">
+                    <div class="info-row">
+                        <span class="info-label">Student Code:</span>
+                        <span class="info-value" id="val-code" data-field="code"></span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Name:</span>
+                        <span class="info-value" id="val-name" data-field="name"></span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">National ID:</span>
+                        <span class="info-value" id="val-nid" data-field="nid"></span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Level:</span>
+                        <span class="info-value" id="val-level" data-field="level"></span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Development/Major:</span>
+                        <span class="info-value" id="val-major" data-field="major"></span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Division:</span>
+                        <span class="info-value" id="val-division" data-field="division"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="id-footer">
+                www.cis.edu.eg.com
+            </div>
+        </div>
+
+        <!-- GPA Calculator Section -->
+        <div class="gpa-section">
+            <div class="gpa-header">
+                <div class="gpa-display">
+                    <span class="gpa-label">Current GPA:</span>
+                    <span class="gpa-value" id="gpa-value">0.00</span>
+                </div>
+            </div>
+
+            <!-- Course Table -->
+            <div class="courses-container">
+                <table class="courses-table" id="courses-table" dir="rtl">
+                    <thead>
+                        <tr>
+                            <th
+                                style="background: #5B9BD5; color: white; padding: 1rem; font-size: 1.1rem; border: 1px solid #4A8BC2;">
+                                التقدير</th>
+                            <th
+                                style="background: #5B9BD5; color: white; padding: 1rem; font-size: 1.1rem; border: 1px solid #4A8BC2;">
+                                اسم المادة</th>
+                            <th
+                                style="background: #5B9BD5; color: white; padding: 1rem; font-size: 1.1rem; border: 1px solid #4A8BC2;">
+                                كود المادة</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr data-course-index="0">
+                            <td style="padding: 0.8rem; border: 1px solid #ddd; text-align: center;">
+                                <select class="course-grade-select" disabled
+                                    style="width: 100%; padding: 0.5rem; border: none; background: transparent; font-size: 1rem; text-align: center;">
+                                    <option value="">-</option>
+                                    <option value="A+">A+</option>
+                                    <option value="A">A</option>
+                                    <option value="A-">A-</option>
+                                    <option value="B+">B+</option>
+                                    <option value="B">B</option>
+                                    <option value="B-">B-</option>
+                                    <option value="C+">C+</option>
+                                    <option value="C">C</option>
+                                    <option value="C-">C-</option>
+                                    <option value="D+">D+</option>
+                                    <option value="D">D</option>
+                                    <option value="F">F</option>
+                                </select>
+                            </td>
+                            <td style="padding: 0.8rem; border: 1px solid #ddd;">
+                                <input type="text" class="course-name-input" placeholder="اسم المادة" readonly
+                                    style="width: 100%; padding: 0.5rem; border: none; background: transparent; font-size: 1rem; text-align: right;">
+                            </td>
+                            <td style="padding: 0.8rem; border: 1px solid #ddd; text-align: center;">
+                                <input type="text" class="course-code-input" placeholder="BS111" readonly
+                                    style="width: 100%; padding: 0.5rem; border: none; background: transparent; font-size: 1rem; text-align: center;">
+                            </td>
+                        </tr>
+                        <tr data-course-index="1">
+                            <td style="padding: 0.8rem; border: 1px solid #ddd; text-align: center;">
+                                <select class="course-grade-select" disabled
+                                    style="width: 100%; padding: 0.5rem; border: none; background: transparent; font-size: 1rem; text-align: center;">
+                                    <option value="">-</option>
+                                    <option value="A+">A+</option>
+                                    <option value="A">A</option>
+                                    <option value="A-">A-</option>
+                                    <option value="B+">B+</option>
+                                    <option value="B">B</option>
+                                    <option value="B-">B-</option>
+                                    <option value="C+">C+</option>
+                                    <option value="C">C</option>
+                                    <option value="C-">C-</option>
+                                    <option value="D+">D+</option>
+                                    <option value="D">D</option>
+                                    <option value="F">F</option>
+                                </select>
+                            </td>
+                            <td style="padding: 0.8rem; border: 1px solid #ddd;">
+                                <input type="text" class="course-name-input" placeholder="اسم المادة" readonly
+                                    style="width: 100%; padding: 0.5rem; border: none; background: transparent; font-size: 1rem; text-align: right;">
+                            </td>
+                            <td style="padding: 0.8rem; border: 1px solid #ddd; text-align: center;">
+                                <input type="text" class="course-code-input" placeholder="H102" readonly
+                                    style="width: 100%; padding: 0.5rem; border: none; background: transparent; font-size: 1rem; text-align: center;">
+                            </td>
+                        </tr>
+                        <tr data-course-index="2">
+                            <td style="padding: 0.8rem; border: 1px solid #ddd; text-align: center;">
+                                <select class="course-grade-select" disabled
+                                    style="width: 100%; padding: 0.5rem; border: none; background: transparent; font-size: 1rem; text-align: center;">
+                                    <option value="">-</option>
+                                    <option value="A+">A+</option>
+                                    <option value="A">A</option>
+                                    <option value="A-">A-</option>
+                                    <option value="B+">B+</option>
+                                    <option value="B">B</option>
+                                    <option value="B-">B-</option>
+                                    <option value="C+">C+</option>
+                                    <option value="C">C</option>
+                                    <option value="C-">C-</option>
+                                    <option value="D+">D+</option>
+                                    <option value="D">D</option>
+                                    <option value="F">F</option>
+                                </select>
+                            </td>
+                            <td style="padding: 0.8rem; border: 1px solid #ddd;">
+                                <input type="text" class="course-name-input" placeholder="اسم المادة" readonly
+                                    style="width: 100%; padding: 0.5rem; border: none; background: transparent; font-size: 1rem; text-align: right;">
+                            </td>
+                            <td style="padding: 0.8rem; border: 1px solid #ddd; text-align: center;">
+                                <input type="text" class="course-code-input" placeholder="CS101" readonly
+                                    style="width: 100%; padding: 0.5rem; border: none; background: transparent; font-size: 1rem; text-align: center;">
+                            </td>
+                        </tr>
+                        <tr data-course-index="3">
+                            <td style="padding: 0.8rem; border: 1px solid #ddd; text-align: center;">
+                                <select class="course-grade-select" disabled
+                                    style="width: 100%; padding: 0.5rem; border: none; background: transparent; font-size: 1rem; text-align: center;">
+                                    <option value="">-</option>
+                                    <option value="A+">A+</option>
+                                    <option value="A">A</option>
+                                    <option value="A-">A-</option>
+                                    <option value="B+">B+</option>
+                                    <option value="B">B</option>
+                                    <option value="B-">B-</option>
+                                    <option value="C+">C+</option>
+                                    <option value="C">C</option>
+                                    <option value="C-">C-</option>
+                                    <option value="D+">D+</option>
+                                    <option value="D">D</option>
+                                    <option value="F">F</option>
+                                </select>
+                            </td>
+                            <td style="padding: 0.8rem; border: 1px solid #ddd;">
+                                <input type="text" class="course-name-input" placeholder="اسم المادة" readonly
+                                    style="width: 100%; padding: 0.5rem; border: none; background: transparent; font-size: 1rem; text-align: right;">
+                            </td>
+                            <td style="padding: 0.8rem; border: 1px solid #ddd; text-align: center;">
+                                <input type="text" class="course-code-input" placeholder="BS102" readonly
+                                    style="width: 100%; padding: 0.5rem; border: none; background: transparent; font-size: 1rem; text-align: center;">
+                            </td>
+                        </tr>
+                        <tr data-course-index="4">
+                            <td style="padding: 0.8rem; border: 1px solid #ddd; text-align: center;">
+                                <select class="course-grade-select" disabled
+                                    style="width: 100%; padding: 0.5rem; border: none; background: transparent; font-size: 1rem; text-align: center;">
+                                    <option value="">-</option>
+                                    <option value="A+">A+</option>
+                                    <option value="A">A</option>
+                                    <option value="A-">A-</option>
+                                    <option value="B+">B+</option>
+                                    <option value="B">B</option>
+                                    <option value="B-">B-</option>
+                                    <option value="C+">C+</option>
+                                    <option value="C">C</option>
+                                    <option value="C-">C-</option>
+                                    <option value="D+">D+</option>
+                                    <option value="D">D</option>
+                                    <option value="F">F</option>
+                                </select>
+                            </td>
+                            <td style="padding: 0.8rem; border: 1px solid #ddd;">
+                                <input type="text" class="course-name-input" placeholder="اسم المادة" readonly
+                                    style="width: 100%; padding: 0.5rem; border: none; background: transparent; font-size: 1rem; text-align: right;">
+                            </td>
+                            <td style="padding: 0.8rem; border: 1px solid #ddd; text-align: center;">
+                                <input type="text" class="course-code-input" placeholder="BS101" readonly
+                                    style="width: 100%; padding: 0.5rem; border: none; background: transparent; font-size: 1rem; text-align: center;">
+                            </td>
+                        </tr>
+                        <tr data-course-index="5">
+                            <td style="padding: 0.8rem; border: 1px solid #ddd; text-align: center;">
+                                <select class="course-grade-select" disabled
+                                    style="width: 100%; padding: 0.5rem; border: none; background: transparent; font-size: 1rem; text-align: center;">
+                                    <option value="">-</option>
+                                    <option value="A+">A+</option>
+                                    <option value="A">A</option>
+                                    <option value="A-">A-</option>
+                                    <option value="B+">B+</option>
+                                    <option value="B">B</option>
+                                    <option value="B-">B-</option>
+                                    <option value="C+">C+</option>
+                                    <option value="C">C</option>
+                                    <option value="C-">C-</option>
+                                    <option value="D+">D+</option>
+                                    <option value="D">D</option>
+                                    <option value="F">F</option>
+                                </select>
+                            </td>
+                            <td style="padding: 0.8rem; border: 1px solid #ddd;">
+                                <input type="text" class="course-name-input" placeholder="اسم المادة" readonly
+                                    style="width: 100%; padding: 0.5rem; border: none; background: transparent; font-size: 1rem; text-align: right;">
+                            </td>
+                            <td style="padding: 0.8rem; border: 1px solid #ddd; text-align: center;">
+                                <input type="text" class="course-code-input" placeholder="H101" readonly
+                                    style="width: 100%; padding: 0.5rem; border: none; background: transparent; font-size: 1rem; text-align: center;">
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Organizer Controls -->
+        <div class="controls-area">
+            <button id="btn-organizer-signin" class="btn btn-modal-action" style="max-width: 200px;">Organizer
+                Sign
+                In</button>
+            <div id="organizer-controls" class="hidden"
+                style="display: flex; flex-direction: column; gap: 10px; justify-content: center; width: 100%; align-items: center;">
+                <div style="display: flex; gap: 10px; justify-content: center; width: 100%; flex-wrap: wrap;">
+                    <button id="btn-save-student" class="btn btn-modal-action"
+                        style="background: #28a745; max-width: 200px;">Save Data</button>
+                    <button id="btn-organizer-logout" class="btn btn-logout"
+                        style="background: #dc3545; color: #fff; max-width: 200px;">Organizer Logout</button>
+                </div>
+
+                <!-- Create New Student Account -->
+                <div
+                    style="margin-top: 1rem; padding: 1rem; border: 1px solid #ccc; border-radius: 8px; width: 100%; max-width: 400px; background: #f9f9f9;">
+                    <h3 style="margin-top: 0; color: #333; font-size: 1rem;">Give Student Email & Access</h3>
+                    <input type="email" id="new-student-email" placeholder="Student Email"
+                        style="width: 100%; padding: 0.5rem; margin-bottom: 0.5rem; box-sizing: border-box;">
+                    <input type="password" id="new-student-password" placeholder="Password"
+                        style="width: 100%; padding: 0.5rem; margin-bottom: 0.5rem; box-sizing: border-box;">
+                    <button id="btn-create-student-account" class="btn btn-login"
+                        style="background: var(--orange-dark); width: 100%;">Create Account</button>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
